@@ -45,6 +45,7 @@
     id _delegate;
     BOOL _toolbarHidden;
     BOOL _navigationBarHidden;
+    UIView *_contentView;
     
     struct {
         BOOL didShowViewController : 1;

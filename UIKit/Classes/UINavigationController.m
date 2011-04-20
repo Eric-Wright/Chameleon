@@ -66,6 +66,7 @@ static const CGFloat ToolbarHeight = 28;
     [_viewControllers release];
     [_navigationBar release];
     [_toolbar release];
+	[_contentView release];
     [super dealloc];
 }
 
@@ -114,10 +115,14 @@ static const CGFloat ToolbarHeight = 28;
     self.view = [[[UIView alloc] initWithFrame:CGRectMake(0,0,320,480)] autorelease];
     self.view.clipsToBounds = YES;
     
+    _contentView = [[UIView alloc] initWithFrame:[self _controllerFrame]];
+    _contentView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    [self.view addSubview:_contentView];
+	
     UIViewController *topViewController = self.topViewController;
-    topViewController.view.frame = [self _controllerFrame];
+    topViewController.view.frame = _contentView.bounds;
     topViewController.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    [self.view addSubview:topViewController.view];
+    [_contentView addSubview:topViewController.view];
     
     _navigationBar.frame = [self _navigationBarFrame];
     _navigationBar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
@@ -159,7 +164,7 @@ static const CGFloat ToolbarHeight = 28;
     UIViewController *topController = self.topViewController;
     [_toolbar setItems:topController.toolbarItems animated:animated];
     _toolbar.hidden = self.toolbarHidden;
-    topController.view.frame = [self _controllerFrame];
+    topController.view.frame = _contentView.bounds;
 }
 
 - (void)setViewControllers:(NSArray *)newViewControllers animated:(BOOL)animated
@@ -195,8 +200,8 @@ static const CGFloat ToolbarHeight = 28;
                 [_delegate navigationController:self willShowViewController:newTopController animated:animated];
             }
             
-            newTopController.view.frame = [self _controllerFrame];
-            [self.view insertSubview:newTopController.view atIndex:0];
+            newTopController.view.frame = _contentView.bounds;
+            [_contentView insertSubview:newTopController.view atIndex:0];
             
             [newTopController viewDidAppear:animated];
             if (_delegateHas.didShowViewController) {
@@ -229,15 +234,16 @@ static const CGFloat ToolbarHeight = 28;
     if ([self isViewLoaded]) {
         UIViewController *oldViewController = self.topViewController;
         
-        const CGRect controllerFrame = [self _controllerFrame];
+        const CGRect controllerFrame = _contentView.bounds;
         const CGRect nextFrameStart = CGRectOffset(controllerFrame, controllerFrame.size.width, 0);
         const CGRect nextFrameEnd = controllerFrame;
         const CGRect oldFrameStart = controllerFrame;
         const CGRect oldFrameEnd = CGRectOffset(controllerFrame, -controllerFrame.size.width, 0);
         
         viewController.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-        [self.view insertSubview:viewController.view atIndex:0];
+        [_contentView insertSubview:viewController.view atIndex:0];
         
+		[oldViewController viewWillDisappear:animated];
         [viewController viewWillAppear:animated];
         if (_delegateHas.willShowViewController) {
             [_delegate navigationController:self willShowViewController:viewController animated:animated];
@@ -261,6 +267,7 @@ static const CGFloat ToolbarHeight = 28;
             [oldViewController.view removeFromSuperview];
         }
         
+        [oldViewController viewDidDisappear:animated];
         [viewController viewDidAppear:animated];
         if (_delegateHas.didShowViewController) {
             [_delegate navigationController:self didShowViewController:viewController animated:animated];
@@ -289,15 +296,16 @@ static const CGFloat ToolbarHeight = 28;
         if ([self isViewLoaded]) {
             UIViewController *nextViewController = self.topViewController;
             
-            const CGRect controllerFrame = [self _controllerFrame];
+            const CGRect controllerFrame = _contentView.bounds;
             const CGRect nextFrameStart = CGRectOffset(controllerFrame, -controllerFrame.size.width, 0);
             const CGRect nextFrameEnd = controllerFrame;
             const CGRect oldFrameStart = controllerFrame;
             const CGRect oldFrameEnd = CGRectOffset(controllerFrame, controllerFrame.size.width, 0);
             
             nextViewController.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-            [self.view insertSubview:nextViewController.view atIndex:0];
+            [_contentView insertSubview:nextViewController.view atIndex:0];
             
+			[oldViewController viewWillDisappear:animated];
             [nextViewController viewWillAppear:animated];
             if (_delegateHas.willShowViewController) {
                 [_delegate navigationController:self willShowViewController:nextViewController animated:animated];
@@ -321,6 +329,7 @@ static const CGFloat ToolbarHeight = 28;
                 [oldViewController.view removeFromSuperview];
             }
             
+            [oldViewController viewDidDisappear:animated];
             [nextViewController viewDidAppear:animated];
             if (_delegateHas.didShowViewController) {
                 [_delegate navigationController:self didShowViewController:nextViewController animated:animated];
