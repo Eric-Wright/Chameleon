@@ -156,6 +156,31 @@ static NSPoint PopoverWindowOrigin(NSWindow *inWindow, NSRect fromRect, NSSize p
     _delegateHas.popoverControllerShouldDismissPopover = [_delegate respondsToSelector:@selector(popoverControllerShouldDismissPopover:)];
 }
 
+- (void)setPopoverContentSize:(CGSize)size animated:(BOOL)animated 
+{
+    CGSize oldSize = [_popoverView contentSize];
+    [_popoverView setContentSize:size animated:animated];
+    
+    CGFloat heightDiff = size.height - oldSize.height;
+    CGFloat widthDiff = size.width - oldSize.width;
+    CGFloat xDelta = floor(widthDiff/2);
+    
+    NSRect oldFrame = [(UIPopoverNSWindow*)_popoverWindow frame];
+    
+    NSRect newFrame = NSMakeRect(oldFrame.origin.x - xDelta, oldFrame.origin.y - heightDiff, oldFrame.size.width + widthDiff, oldFrame.size.height + heightDiff);
+    [_popoverWindow setFrame:newFrame display:YES animate:animated];
+}
+
+- (void)setPopoverContentSize:(CGSize)size 
+{
+    [self setPopoverContentSize:size animated:YES];
+}
+
+- (CGSize)popoverContentSize 
+{
+    return [_popoverView contentSize];
+}
+
 - (void)setContentViewController:(UIViewController *)controller animated:(BOOL)animated
 {
     if (controller != _contentViewController) {

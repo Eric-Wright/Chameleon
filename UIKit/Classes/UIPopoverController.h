@@ -69,6 +69,10 @@ typedef NSUInteger UIPopoverArrowDirection;
 
 - (void)setContentViewController:(UIViewController *)controller animated:(BOOL)animated;
 
+- (void)setPopoverContentSize:(CGSize)size animated:(BOOL)animated;
+- (void)setPopoverContentSize:(CGSize)size;
+- (CGSize)popoverContentSize;
+
 - (void)presentPopoverFromRect:(CGRect)rect inView:(UIView *)view permittedArrowDirections:(UIPopoverArrowDirection)arrowDirections animated:(BOOL)animated;
 - (void)presentPopoverFromBarButtonItem:(UIBarButtonItem *)item permittedArrowDirections:(UIPopoverArrowDirection)arrowDirections animated:(BOOL)animated;
 - (void)dismissPopoverAnimated:(BOOL)animated;
@@ -78,5 +82,6 @@ typedef NSUInteger UIPopoverArrowDirection;
 @property (nonatomic, readonly, getter=isPopoverVisible) BOOL popoverVisible;
 @property (nonatomic, copy) NSArray *passthroughViews;
 @property (nonatomic, readonly) UIPopoverArrowDirection popoverArrowDirection;
+@property (nonatomic, getter=popoverContentSize, setter=setPopoverContentSize:) CGSize popoverContentSize;
 
 @end
